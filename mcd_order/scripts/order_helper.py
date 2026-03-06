@@ -168,8 +168,22 @@ def _parse_nutrition_markdown(text: str) -> dict:
     return result
 
 
+def _find_meal_by_name(name: str, meals_map: dict) -> dict | None:
+    """在菜单中按名称查找菜品：先精确匹配，再模糊匹配（互相包含）"""
+    # 精确匹配
+    for code, info in meals_map.items():
+        if info.get("name", "") == name:
+            return {"code": code, **info}
+    # 模糊匹配
+    for code, info in meals_map.items():
+        meal_name = info.get("name", "")
+        if name in meal_name or meal_name in name:
+            return {"code": code, **info}
+    return None
+
+
 def cmd_load_default_meal(args):
-    """读取 config.json 中对应时段的默认套餐"""
+    """读取 config.json 中对应时段的默认套餐，通过菜品名在菜单中匹配 productCode"""
     slot = args.time_slot
     config = _load_config()
     default_meals = config.get("default_meals", {})
@@ -178,16 +192,47 @@ def cmd_load_default_meal(args):
         sys.exit(1)
 
     entry = default_meals[slot]
-    cart = [
-        {"productCode": item["productCode"], "name": item["name"],
-         "quantity": item["quantity"], "price": 0}
-        for item in entry["items"]
-    ]
+
+    # 无菜单数据时，只返回名称（价格/code 待后续补全）
+    if not args.menu:
+        cart = [{"name": item["name"], "quantity": item["quantity"], "price": 0}
+                for item in entry["items"]]
+        print(json.dumps({"ok": True, "slot": slot, "label": entry["label"],
+                          "cart": cart, "resolved": False}, ensure_ascii=False))
+        return
+
+    menu_data = _parse_json_arg(args.menu, "--menu")
+    meals_map = menu_data.get("meals", {}) if isinstance(menu_data, dict) else {}
+
+    cart = []
+    not_found = []
+    for item in entry["items"]:
+        matched = _find_meal_by_name(item["name"], meals_map)
+        if matched:
+            cart.append({
+                "productCode": matched["code"],
+                "code": matched["code"],
+                "name": matched.get("name", item["name"]),
+                "quantity": item["quantity"],
+                "price": matched.get("currentPrice", 0),
+            })
+        else:
+            not_found.append(item["name"])
+
+    if not_found:
+        print(json.dumps({
+            "ok": False,
+            "not_found": not_found,
+            "error": f"以下菜品在当前门店未找到：{'、'.join(not_found)}，请在 config.json 中更新菜品名称",
+        }, ensure_ascii=False))
+        return
+
     print(json.dumps({
         "ok": True,
         "slot": slot,
         "label": entry["label"],
         "cart": cart,
+        "resolved": True,
     }, ensure_ascii=False))
 
 
@@ -373,6 +418,8 @@ def main():
     ldm_parser.add_argument("--time-slot", required=True,
                             choices=["breakfast", "lunch", "dinner"],
                             help="时段：breakfast / lunch / dinner")
+    ldm_parser.add_argument("--menu", default=None,
+                            help="query-meals 返回的 data 部分（JSON），用于按名称匹配 productCode")
 
     # calorie-pairing
     cp_parser = subparsers.add_parser("calorie-pairing", help="按热量目标从菜单自动搭配套餐")

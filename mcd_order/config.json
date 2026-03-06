@@ -3,22 +3,22 @@
     "breakfast": {
       "label": "早餐",
       "items": [
-        {"productCode": "903571", "name": "麦香鸡", "quantity": 1},
-        {"productCode": "903071", "name": "无糖可口可乐中杯", "quantity": 1}
+        {"name": "麦香鸡", "quantity": 1},
+        {"name": "无糖可口可乐中杯", "quantity": 1}
       ]
     },
     "lunch": {
       "label": "午餐",
       "items": [
-        {"productCode": "9900012776", "name": "爆脆精选单人餐", "quantity": 1},
-        {"productCode": "903071",     "name": "无糖可口可乐中杯", "quantity": 1}
+        {"name": "爆脆精选单人餐", "quantity": 1},
+        {"name": "无糖可口可乐中杯", "quantity": 1}
       ]
     },
     "dinner": {
       "label": "晚餐",
       "items": [
-        {"productCode": "9900011553", "name": "麦辣鸡腿汉堡中套餐", "quantity": 1},
-        {"productCode": "903071",     "name": "无糖可口可乐中杯", "quantity": 1}
+        {"name": "麦辣鸡腿汉堡中套餐", "quantity": 1},
+        {"name": "无糖可口可乐中杯", "quantity": 1}
       ]
     }
   },

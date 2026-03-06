@@ -126,7 +126,7 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
 
 ## 自定义默认套餐
 
-编辑 `config.json`，修改 `default_meals` 中的 `productCode`（商品编号可在麦当劳 App 或 MCP `query-meals` 接口中查询）：
+编辑 `mcd_order/config.json`，填写你想要的菜品名称（与麦当劳菜单上的名称一致即可，支持模糊匹配）：
 
 ```json
 {
@@ -134,13 +134,15 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
     "lunch": {
       "label": "午餐",
       "items": [
-        {"productCode": "9900012776", "name": "爆脆精选单人餐", "quantity": 1},
-        {"productCode": "903071",     "name": "无糖可口可乐中杯", "quantity": 1}
+        {"name": "爆脆精选单人餐", "quantity": 1},
+        {"name": "无糖可口可乐中杯", "quantity": 1}
       ]
     }
   }
 }
 ```
+
+下单时系统会自动在当前门店菜单中匹配菜品。若某个菜品在该门店找不到，会提示你更新名称。
 
 ---
 

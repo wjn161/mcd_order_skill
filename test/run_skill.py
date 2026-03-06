@@ -406,11 +406,26 @@ def step_choose_meal_mode() -> list | None:
     print(f"  当前时间：{now_data.get('formatted', '')}，时段：{slot_label}")
 
     if raw == "1":
-        # 默认套餐
-        out = run_helper("load-default-meal", "--time-slot", slot)
+        # 默认套餐：静默取菜单，按名称匹配
+        print("\n  静默读取门店菜单...")
+        addr_resp = mcp_call("delivery-query-addresses")
+        addresses = addr_resp.get("data", {}).get("addresses", []) if isinstance(addr_resp, dict) else []
+        if not addresses:
+            print("  [警告] 无法获取地址，降级为自由选菜")
+            return None
+        store_code = addresses[0].get("storeCode", "")
+        menu_resp = mcp_call("query-meals", {"storeCode": store_code})
+        menu_data = menu_resp.get("data", menu_resp) if isinstance(menu_resp, dict) else {}
+
+        out = run_helper("load-default-meal", "--time-slot", slot, "--menu", json.dumps(menu_data))
         data = json.loads(out)
         if not data.get("ok"):
-            print(f"  [警告] {data.get('error', '加载失败')}，降级为自由选菜")
+            not_found = data.get("not_found", [])
+            if not_found:
+                print(f"\n  [提示] 以下菜品在当前门店未找到：{', '.join(not_found)}")
+                print("  请在 mcd_order/config.json 中更新菜品名称后重试，或选择自由选菜。")
+            else:
+                print(f"  [警告] {data.get('error', '加载失败')}")
             return None
         cart = data["cart"]
         print(f"\n  默认{data['label']}套餐：")

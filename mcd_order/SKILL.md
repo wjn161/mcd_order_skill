@@ -28,8 +28,14 @@ python3 {SKILL_DIR}/scripts/order_helper.py check-config
 
 **默认套餐：**
 1. 调用 `now-time-info`，取 `data.hour` 判断时段（6-10→breakfast，11-14 及 15-16→lunch，17-21→dinner，其余→dinner）
-2. 运行 `python3 {SKILL_DIR}/scripts/order_helper.py load-default-meal --time-slot <slot>`
-3. 展示返回的 `label` 和 `cart` 给用户确认；用户确认后**跳过步骤 2**，直接进入步骤 3
+2. 调用 `delivery-query-addresses` 静默取第一个地址的 `storeCode`
+3. 调用 `query-meals`（传入 storeCode），提取响应中的 `data` 部分 JSON
+4. 运行：
+   ```bash
+   python3 {SKILL_DIR}/scripts/order_helper.py load-default-meal --time-slot <slot> --menu '<data_json>'
+   ```
+5. 若返回 `{"ok": true, ...}`，展示 `label` 和 `cart` 给用户确认；用户确认后**跳过步骤 2**，直接进入步骤 3
+6. 若返回 `{"ok": false, "not_found": [...], ...}`，告知用户哪些菜品在当前门店未找到，提示去 `config.json` 修改菜品名称，本次降级为自由选菜
 
 **按热量搭配：**
 1. 调用 `now-time-info` 判断时段
