@@ -6,6 +6,7 @@
   python3 order_helper.py format-order-summary --items '<json>' --price '<json>' --address '<json>'
   python3 order_helper.py load-default-meal --time-slot breakfast|lunch|dinner
   python3 order_helper.py calorie-pairing --menu '<data_json>' --nutrition-text '<markdown>' --time-slot breakfast|lunch|dinner
+  python3 order_helper.py gen-pay-qr --pay-url '<scanToPay_url>'
 """
 
 import sys
@@ -304,6 +305,53 @@ def cmd_calorie_pairing(args):
     }, ensure_ascii=False))
 
 
+def cmd_gen_pay_qr(args):
+    """将 scanToPay URL 转换为 jumpToApp URL 并生成支付二维码 PNG"""
+    raw_url = args.pay_url.strip()
+
+    # URL 转换：scanToPay?orderId=XXX → jumpToApp/?orderId=XXX
+    pay_url = re.sub(r'/scanToPay\?', '/jumpToApp/?', raw_url)
+
+    # 提取订单号用于文件命名
+    m = re.search(r'orderId=(\w+)', pay_url)
+    order_id = m.group(1) if m else "unknown"
+
+    try:
+        import qrcode
+    except ImportError:
+        print(json.dumps({
+            "ok": False,
+            "error": "缺少依赖，请运行：pip3 install 'qrcode[pil]'",
+        }, ensure_ascii=False))
+        sys.exit(1)
+
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=10, border=4)
+    qr.add_data(pay_url)
+    qr.make(fit=True)
+
+    try:
+        img = qr.make_image(fill_color="black", back_color="white")
+        qr_path = f"/tmp/mcd_pay_{order_id}.png"
+        img.save(qr_path)
+        print(json.dumps({
+            "ok": True,
+            "pay_url": pay_url,
+            "qr_path": qr_path,
+            "mode": "image",
+        }, ensure_ascii=False))
+    except Exception:
+        # Pillow 不可用时降级为 ASCII 二维码
+        import io
+        buf = io.StringIO()
+        qr.print_ascii(out=buf)
+        print(json.dumps({
+            "ok": True,
+            "pay_url": pay_url,
+            "ascii_qr": buf.getvalue(),
+            "mode": "ascii",
+        }, ensure_ascii=False))
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="麦当劳点餐辅助脚本",
@@ -334,6 +382,10 @@ def main():
                            choices=["breakfast", "lunch", "dinner"],
                            help="时段：breakfast / lunch / dinner")
 
+    # gen-pay-qr
+    gq_parser = subparsers.add_parser("gen-pay-qr", help="将支付 URL 转换并生成二维码")
+    gq_parser.add_argument("--pay-url", required=True, help="create-order 返回的 payUrl（scanToPay 格式）")
+
     args = parser.parse_args()
 
     if args.command == "check-config":
@@ -344,6 +396,8 @@ def main():
         cmd_load_default_meal(args)
     elif args.command == "calorie-pairing":
         cmd_calorie_pairing(args)
+    elif args.command == "gen-pay-qr":
+        cmd_gen_pay_qr(args)
     else:
         parser.print_help()
         sys.exit(1)

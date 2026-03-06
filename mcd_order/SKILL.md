@@ -86,16 +86,26 @@ python3 {SKILL_DIR}/scripts/order_helper.py format-order-summary \
 
 将脚本输出的文本直接展示给用户，并询问："以上信息是否正确？确认下单吗？"
 
-### 步骤 6：创建订单
+### 步骤 6：创建订单并生成支付二维码
 
-用户确认后，调用 `create-order` 创建订单。
+用户确认后，调用 `create-order` 创建订单。成功后：
 
-将返回的订单号和支付链接展示给用户：
+1. 取响应中的 `data.payUrl`（格式为 `https://m.mcd.cn/mcp/scanToPay?orderId=...`）
+2. 运行二维码生成脚本：
+
+```bash
+python3 {SKILL_DIR}/scripts/order_helper.py gen-pay-qr --pay-url '<payUrl>'
+```
+
+3. 脚本内部自动将 URL 转换为 `https://m.mcd.cn/mcp/jumpToApp/?orderId=...` 并生成二维码
+4. 若返回 `"mode": "image"`，将 `qr_path` 路径的图片文件展示给用户（embed 或告知路径）
+5. 若返回 `"mode": "ascii"`，直接将 `ascii_qr` 字段内容展示给用户
+
+向用户展示：
 ```
 ✅ 订单创建成功！
 订单号：{order_id}
-支付链接：{payment_url}
-请在 15 分钟内完成支付。
+[支付二维码]  ← 请在 15 分钟内扫码完成支付
 ```
 
 ## 3. 订单跟踪

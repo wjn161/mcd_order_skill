@@ -328,7 +328,7 @@ def step_confirm(cart: list, price: dict, address: dict) -> bool:
 
 
 def step_create_order(address: dict, cart: list):
-    """Step 5：创建订单"""
+    """Step 5：创建订单，成功后生成支付二维码"""
     print("\n【Step 5】提交订单...")
     items = [{"productCode": item["code"], "quantity": item["quantity"]} for item in cart]
 
@@ -341,17 +341,44 @@ def step_create_order(address: dict, cart: list):
     order = order_resp.get("data", order_resp) if isinstance(order_resp, dict) else {}
     order_id = order.get("orderId") or order.get("order_id", "")
     pay_url = order.get("payUrl") or order.get("payment_url", "")
-    msg = order.get("message") or order_resp.get("message", "请尽快完成支付")
 
-    if order_resp.get("success"):
-        print(f"""
-✅ 订单创建成功！
-   订单号：{order_id}
-   支付链接：{pay_url}
-   {msg}
-""")
-    else:
+    if not order_resp.get("success"):
         print(f"\n⚠️  下单失败：{order_resp.get('message', '未知错误')}（code: {order_resp.get('code')}）\n")
+        return
+
+    print(f"\n✅ 订单创建成功！订单号：{order_id}")
+
+    if not pay_url:
+        print("  （未返回支付链接）")
+        return
+
+    # 生成支付二维码
+    print("  生成支付二维码...")
+    qr_out = run_helper("gen-pay-qr", "--pay-url", pay_url)
+    try:
+        qr_data = json.loads(qr_out)
+    except (json.JSONDecodeError, ValueError):
+        print(f"  支付链接：{pay_url}")
+        return
+
+    if not qr_data.get("ok"):
+        print(f"  支付链接：{qr_data.get('pay_url', pay_url)}")
+        print(f"  [提示] {qr_data.get('error', '二维码生成失败')}")
+        return
+
+    print(f"  支付地址：{qr_data['pay_url']}")
+
+    if qr_data.get("mode") == "image":
+        qr_path = qr_data["qr_path"]
+        print(f"  二维码已保存：{qr_path}")
+        # macOS 自动打开图片
+        import subprocess as _sp
+        _sp.run(["open", qr_path], check=False)
+        print("  （二维码图片已在系统查看器中打开，请扫码支付）")
+    else:
+        # ASCII 二维码直接打印
+        print("\n  请扫描以下二维码支付：\n")
+        print(qr_data.get("ascii_qr", ""))
 
 
 def step_choose_meal_mode() -> list | None:
