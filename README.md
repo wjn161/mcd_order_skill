@@ -163,10 +163,15 @@ pip3 install "qrcode[pil]"
 ## 文件结构
 
 ```
-mcd_order/
-├── SKILL.md              # Skill 入口（OpenClaw 读取）
-├── README.md             # 本文件
-├── config.json           # 默认套餐 + 热量目标配置
-└── scripts/
-    └── order_helper.py   # 辅助脚本（时段判断、热量搭配、格式化确认单）
+mdc_order_skills/
+├── README.md                      # 本文件
+├── .gitignore
+├── mcd_order/                     # Skill 目录（OpenClaw 加载）
+│   ├── SKILL.md                   # Skill 入口
+│   ├── config.json                # 默认套餐 + 热量目标配置
+│   └── scripts/
+│       └── order_helper.py        # 辅助脚本（时段判断、热量搭配、格式化确认单、支付二维码）
+└── test/
+    ├── openclaw.json              # OpenClaw 配置模板
+    └── run_skill.py               # 本地交互式测试脚本
 ```
