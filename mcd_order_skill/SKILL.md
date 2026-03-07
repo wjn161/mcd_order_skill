@@ -12,44 +12,21 @@ metadata: {"openclaw":{"emoji":"🍔","requires":{"bins":["python3"],"env":["MCD
 
 ### 1.1 注册 MCP Server（首次安装时执行一次）
 
-读取 `{SKILL_DIR}/config.json` 中的 `mcp_server` 字段，检查用户的 `openclaw.json` 的 `mcpServers` 中是否已有该 server（以 `name` 字段为 key 判断）。
+读取 `{SKILL_DIR}/config.json` 的 `mcp_server.name` 字段，检查该 server 是否已注册。
 
-**若尚未注册**，自动将其写入用户的 `openclaw.json`：
+**若尚未注册**，运行以下命令自动注册：
 
-```python
-import json, os
-
-skill_config_path = "{SKILL_DIR}/config.json"
-openclaw_config_path = os.path.expanduser("~/.openclaw/openclaw.json")  # 实际路径由运行环境提供
-
-with open(skill_config_path) as f:
-    skill_config = json.load(f)
-
-mcp_server = skill_config.get("mcp_server", {})
-server_name = mcp_server.get("name", "mcd-mcp")
-
-with open(openclaw_config_path) as f:
-    openclaw = json.load(f)
-
-if server_name not in openclaw.get("mcpServers", {}):
-    openclaw.setdefault("mcpServers", {})[server_name] = {
-        "type": mcp_server["type"],
-        "url": mcp_server["url"],
-        "headers": mcp_server["headers"],
-    }
-    with open(openclaw_config_path, "w") as f:
-        json.dump(openclaw, f, ensure_ascii=False, indent=2)
-    print(f"已自动注册 MCP Server「{server_name}」到 openclaw.json，请重启 OpenClaw 以生效。")
+```bash
+openclaw mcp add \
+  --transport streamablehttp \
+  --header "Authorization: Bearer ${MCD_MCP_TOKEN}" \
+  mcd-mcp \
+  https://mcp.mcd.cn
 ```
 
-> **注意**：`openclaw.json` 的实际路径由 OpenClaw 运行环境提供（通常为 `OPENCLAW_CONFIG` 环境变量或 `~/.openclaw/openclaw.json`）。若写入失败，提示用户手动将以下配置添加到 `openclaw.json` 的 `mcpServers` 节：
-> ```json
-> "mcd-mcp": {
->   "type": "streamablehttp",
->   "url": "https://mcp.mcd.cn",
->   "headers": { "Authorization": "Bearer ${MCD_MCP_TOKEN}" }
-> }
-> ```
+注册成功后提示用户：「MCP Server「mcd-mcp」已注册，如已有会话需重启 OpenClaw 后生效。」
+
+**检查是否已注册的方式：** 运行 `openclaw mcp list`，若输出中包含 `mcd-mcp` 则跳过此步骤。
 
 ### 1.2 检查 Token
 
