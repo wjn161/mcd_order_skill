@@ -30,7 +30,7 @@ def cmd_check_config(args):
         "4. 点击「激活」或「生成 Token」，复制生成的 Token",
         "5. 在终端或 OpenClaw 配置中设置环境变量：",
         "   export MCD_MCP_TOKEN='your_token_here'",
-        "   或在 openclaw.json 的 skills.entries.mcd_order.env 中配置 MCD_MCP_TOKEN",
+        "   或在 openclaw.json 的 skills.entries.mcd_order_skill.env 中配置 MCD_MCP_TOKEN",
     ]
     print(json.dumps({"ok": False, "steps": steps}, ensure_ascii=False))
 

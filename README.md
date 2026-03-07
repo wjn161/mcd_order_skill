@@ -1,4 +1,4 @@
-# 🍔 mcd_order — 麦当劳点餐 Skill
+# 🍔 mcd_order_skill — 麦当劳点餐 Skill
 
 通过麦当劳官方 MCP 服务（`https://mcp.mcd.cn`）在 OpenClaw 中完成麦乐送点餐全流程。
 
@@ -36,7 +36,7 @@ OpenClaw 会自动 clone 仓库、配置 skill 目录，完成后提示你填写
 ### 方法二：手动安装
 
 ```bash
-git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_order
+git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_order_skill
 ```
 
 ---
@@ -67,7 +67,7 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
   },
   "skills": {
     "entries": {
-      "mcd_order": {
+      "mcd_order_skill": {
         "enabled": true,
         "env": {
           "MCD_MCP_TOKEN": "YOUR_MCD_MCP_TOKEN"
@@ -93,7 +93,7 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
 你也可以向 OpenClaw 请求自动完成配置检查：
 
 ```
-请运行 mcd_order 的配置检查，确认 Token 和 MCP 连接是否正常
+请运行 mcd_order_skill 的配置检查，确认 Token 和 MCP 连接是否正常
 ```
 
 ---
@@ -126,7 +126,7 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
 
 ## 自定义默认套餐
 
-编辑 `mcd_order/config.json`，填写你想要的菜品名称（与麦当劳菜单上的名称一致即可，支持模糊匹配）：
+编辑 `mcd_order_skill/config.json`，填写你想要的菜品名称（与麦当劳菜单上的名称一致即可，支持模糊匹配）：
 
 ```json
 {
@@ -168,7 +168,7 @@ pip3 install "qrcode[pil]"
 mdc_order_skills/
 ├── README.md                      # 本文件
 ├── .gitignore
-├── mcd_order/                     # Skill 目录（OpenClaw 加载）
+├── mcd_order_skill/                     # Skill 目录（OpenClaw 加载）
 │   ├── SKILL.md                   # Skill 入口
 │   ├── config.json                # 默认套餐 + 热量目标配置
 │   └── scripts/

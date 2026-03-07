@@ -22,7 +22,7 @@ import urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-SCRIPT = ROOT / "mcd_order" / "scripts" / "order_helper.py"
+SCRIPT = ROOT / "mcd_order_skill" / "scripts" / "order_helper.py"
 MCP_URL = "https://mcp.mcd.cn"
 
 
@@ -423,7 +423,7 @@ def step_choose_meal_mode() -> list | None:
             not_found = data.get("not_found", [])
             if not_found:
                 print(f"\n  [提示] 以下菜品在当前门店未找到：{', '.join(not_found)}")
-                print("  请在 mcd_order/config.json 中更新菜品名称后重试，或选择自由选菜。")
+                print("  请在 mcd_order_skill/config.json 中更新菜品名称后重试，或选择自由选菜。")
             else:
                 print(f"  [警告] {data.get('error', '加载失败')}")
             return None

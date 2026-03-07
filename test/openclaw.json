@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "mcd-mcp": {
+      "type": "streamablehttp",
+      "url": "http://localhost:18765",
+      "headers": {
+        "Authorization": "Bearer mock_test_token_12345"
+      }
+    }
+  },
+  "skills": {
+    "entries": {
+      "mcd_order_skill": {
+        "enabled": true,
+        "env": {
+          "MCD_MCP_TOKEN": "mock_test_token_12345"
+        }
+      }
+    }
+  }
+}
