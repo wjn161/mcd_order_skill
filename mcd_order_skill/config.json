@@ -1,4 +1,12 @@
 {
+  "mcp_server": {
+    "name": "mcd-mcp",
+    "type": "streamablehttp",
+    "url": "https://mcp.mcd.cn",
+    "headers": {
+      "Authorization": "Bearer ${MCD_MCP_TOKEN}"
+    }
+  },
   "default_meals": {
     "breakfast": {
       "label": "早餐",
