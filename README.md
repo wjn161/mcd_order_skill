@@ -28,7 +28,7 @@
 直接把下方这句话发给 OpenClaw：
 
 ```
-请帮我安装这个 skill：https://github.com/wjn161/mdc_order_skills
+请帮我安装这个 skill：https://github.com/wjn161/mcd_order_skill
 ```
 
 OpenClaw 会自动 clone 仓库、配置 skill 目录，完成后提示你填写 Token。
@@ -36,7 +36,7 @@ OpenClaw 会自动 clone 仓库、配置 skill 目录，完成后提示你填写
 ### 方法二：手动安装
 
 ```bash
-git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_order_skill
+git clone https://github.com/wjn161/mcd_order_skill ~/.openclaw/skills/mcd_order_skill
 ```
 
 ---
