@@ -68,7 +68,7 @@ python3 {SKILL_DIR}/scripts/order_helper.py check-config
 
 **判断是否首次配置的方法：** 读取 config.json，若三个时段的菜品名称与以下任一出厂预设完全一致，则视为未配置：
 - breakfast items: `["麦香鸡", "无糖可口可乐中杯"]`
-- lunch items: `["爆脆精选单人餐", "无糖可口可乐中杯"]`
+- lunch items: `["板烧鸡腿堡", "无糖可口可乐中杯"]`
 - dinner items: `["麦辣鸡腿汉堡中套餐", "无糖可口可乐中杯"]`
 
 ## 2. 点餐完整流程
