@@ -18,7 +18,7 @@
     "lunch": {
       "label": "午餐",
       "items": [
-        {"name": "爆脆精选单人餐", "quantity": 1},
+        {"name": "板烧鸡腿堡", "quantity": 1},
         {"name": "无糖可口可乐中杯", "quantity": 1}
       ]
     },
