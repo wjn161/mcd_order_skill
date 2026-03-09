@@ -12,21 +12,38 @@ metadata: {"openclaw":{"emoji":"🍔","requires":{"bins":["python3"],"env":["MCD
 
 ### 1.1 注册 MCP Server（首次安装时执行一次）
 
-读取 `{SKILL_DIR}/config.json` 的 `mcp_server.name` 字段，检查该 server 是否已注册。
-
-**若尚未注册**，运行以下命令自动注册：
+麦当劳 MCP 服务通过 **mcporter** 注册。检查 `~/.mcporter/mcporter.json` 中是否已有 `mcd-mcp` 条目：
 
 ```bash
-openclaw mcp add \
-  --transport streamablehttp \
-  --header "Authorization: Bearer ${MCD_MCP_TOKEN}" \
-  mcd-mcp \
-  https://mcp.mcd.cn
+python3 -c "
+import json, os, sys
+path = os.path.expanduser('~/.mcporter/mcporter.json')
+if os.path.exists(path):
+    cfg = json.load(open(path))
+    if 'mcd-mcp' in cfg.get('mcpServers', {}):
+        print('already_registered')
+        sys.exit(0)
+print('not_registered')
+"
 ```
 
-注册成功后提示用户：「MCP Server「mcd-mcp」已注册，如已有会话需重启 OpenClaw 后生效。」
+**若输出 `not_registered`**，将以下内容合并写入 `~/.mcporter/mcporter.json`（若文件不存在则新建）：
 
-**检查是否已注册的方式：** 运行 `openclaw mcp list`，若输出中包含 `mcd-mcp` 则跳过此步骤。
+```json
+{
+  "mcpServers": {
+    "mcd-mcp": {
+      "description": "麦当劳官方 MCP 服务",
+      "baseUrl": "https://mcp.mcd.cn",
+      "headers": {
+        "Authorization": "Bearer $env:MCD_MCP_TOKEN"
+      }
+    }
+  }
+}
+```
+
+写入后提示用户：「MCP Server「mcd-mcp」已注册到 mcporter，如已有会话需重启 OpenClaw 后生效。」
 
 ### 1.2 检查 Token
 

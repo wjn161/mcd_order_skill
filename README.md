@@ -50,21 +50,30 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
 3. 点击右上角“控制台”后，会弹出控制台弹窗
 4. 点击激活按钮，申请 MCP Token
 
-### 第二步：配置 openclaw.json
+### 第二步：注册 MCP Server（通过 mcporter）
 
-编辑 `~/.openclaw/openclaw.json`，添加以下两段：
+编辑（或新建）`~/.mcporter/mcporter.json`，添加以下内容：
 
 ```json
 {
   "mcpServers": {
     "mcd-mcp": {
-      "type": "streamablehttp",
-      "url": "https://mcp.mcd.cn",
+      "description": "麦当劳官方 MCP 服务",
+      "baseUrl": "https://mcp.mcd.cn",
       "headers": {
-        "Authorization": "Bearer YOUR_MCD_MCP_TOKEN"
+        "Authorization": "Bearer $env:MCD_MCP_TOKEN"
       }
     }
-  },
+  }
+}
+```
+
+### 第三步：配置 skill Token
+
+编辑 `~/.openclaw/openclaw.json`，在 `skills.entries` 中添加：
+
+```json
+{
   "skills": {
     "entries": {
       "mcd_order_skill": {
@@ -78,7 +87,7 @@ git clone https://github.com/wjn161/mdc_order_skills ~/.openclaw/skills/mcd_orde
 }
 ```
 
-将两处 `YOUR_MCD_MCP_TOKEN` 替换为第一步获取的 Token。
+将 `YOUR_MCD_MCP_TOKEN` 替换为第一步获取的 Token。
 
 ---
 
